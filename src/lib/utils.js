@@ -18,9 +18,10 @@ export const timeAgo = (dateStr) => {
 export const isEventUpcoming = (dateStr) => isFuture(new Date(dateStr))
 export const isEventPast = (dateStr) => isPast(new Date(dateStr))
 
-// Build a fake email from username for Supabase auth
+// Build a synthetic email from username for Supabase auth.
+// Must look like a real email — Supabase rejects unknown TLDs like .local
 export const toAuthEmail = (username) =>
-  `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@community-library.local`
+  `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@libmember.com`
 
 // Deterministic pastel colour from a string (for book spine colours)
 export const stringToColor = (str = '') => {
