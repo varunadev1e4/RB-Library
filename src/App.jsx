@@ -12,16 +12,14 @@ import BookDetail from './pages/BookDetail'
 import MyBooks from './pages/MyBooks'
 import Summaries from './pages/Summaries'
 import Profile from './pages/Profile'
+import Leaderboard from './pages/Leaderboard'
+import Wishlist from './pages/Wishlist'
 import AdminPanel from './pages/admin/AdminPanel'
 import Spinner from './components/ui/Spinner'
 
 function ProtectedRoute({ children, adminOnly = false }) {
   const { user, profile, initialized } = useAuthStore()
-  if (!initialized) return (
-    <div className="flex items-center justify-center min-h-screen bg-paper">
-      <Spinner size="lg" />
-    </div>
-  )
+  if (!initialized) return <div className="flex items-center justify-center min-h-screen bg-paper"><Spinner size="lg" /></div>
   if (!user) return <Navigate to="/login" replace />
   if (adminOnly && profile?.role !== 'admin') return <Navigate to="/" replace />
   return children
@@ -29,18 +27,13 @@ function ProtectedRoute({ children, adminOnly = false }) {
 
 function PublicRoute({ children }) {
   const { user, initialized } = useAuthStore()
-  if (!initialized) return (
-    <div className="flex items-center justify-center min-h-screen bg-paper">
-      <Spinner size="lg" />
-    </div>
-  )
+  if (!initialized) return <div className="flex items-center justify-center min-h-screen bg-paper"><Spinner size="lg" /></div>
   if (user) return <Navigate to="/" replace />
   return children
 }
 
 export default function App() {
   const { initAuth, initialized } = useAuthStore()
-
   useEffect(() => { initAuth() }, [])
 
   if (!initialized) {
@@ -57,21 +50,20 @@ export default function App() {
     <>
       <OfflineNotice />
       <InstallBanner />
-
       <Routes>
         <Route path="/login"  element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
-
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           <Route index element={<Home />} />
-          <Route path="search"    element={<SearchBooks />} />
-          <Route path="books/:id" element={<BookDetail />} />
-          <Route path="my-books"  element={<MyBooks />} />
-          <Route path="summaries" element={<Summaries />} />
-          <Route path="profile"   element={<Profile />} />
-          <Route path="admin"     element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
+          <Route path="search"        element={<SearchBooks />} />
+          <Route path="books/:id"     element={<BookDetail />} />
+          <Route path="my-books"      element={<MyBooks />} />
+          <Route path="summaries"     element={<Summaries />} />
+          <Route path="profile"       element={<Profile />} />
+          <Route path="leaderboard"   element={<Leaderboard />} />
+          <Route path="wishlist"      element={<Wishlist />} />
+          <Route path="admin"         element={<ProtectedRoute adminOnly><AdminPanel /></ProtectedRoute>} />
         </Route>
-
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
