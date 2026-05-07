@@ -2,69 +2,124 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Safe-area custom properties ─────────────────────────────── */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sar: env(safe-area-inset-right);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --bottom-nav-h: 4rem;   /* 64px */
+}
+
 @layer base {
+  /* Prevent iOS font boost */
   html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html, body {
     font-family: 'DM Sans', system-ui, sans-serif;
     background-color: #FDFAF5;
     color: #2C1810;
+    /* Momentum scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    /* Smooth scroll for anchor links */
     scroll-behavior: smooth;
+    /* Antialiasing */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Prevent text selection on interactive elements */
+  button, nav, [role="tab"] {
+    -webkit-user-select: none;
+    user-select: none;
+    /* Remove iOS tap highlight */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   h1, h2, h3 {
     font-family: 'Playfair Display', Georgia, serif;
   }
 
-  /* Custom scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: #F3EDE0; }
-  ::-webkit-scrollbar-thumb { background: #B87748; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #8B5E3C; }
-
-  /* PIN input number styling */
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  /* Prevent iOS zoom on focus — inputs must be ≥16px */
+  input, select, textarea {
+    font-size: 16px !important;
   }
+
+  /* Custom scrollbar (non-mobile) */
+  @media (hover: hover) {
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #F3EDE0; }
+    ::-webkit-scrollbar-thumb { background: #B87748; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #8B5E3C; }
+  }
+
+  /* PIN inputs */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
   input[type=number] { -moz-appearance: textfield; }
 }
 
 @layer components {
-  .book-spine {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-  }
-
+  /* ── Page animation ─────────────────────────────────────────── */
   .page-enter {
-    animation: pageEnter 0.3s ease-out forwards;
+    animation: pageEnter 0.25s ease-out both;
   }
-
   @keyframes pageEnter {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
   }
 
+  /* ── Skeleton shimmer ───────────────────────────────────────── */
   .shimmer {
     background: linear-gradient(90deg, #F3EDE0 25%, #FAF7F2 50%, #F3EDE0 75%);
     background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
+    animation: shimmer 1.4s infinite;
   }
-
   @keyframes shimmer {
     0%   { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
 
-  .nav-item-active {
-    @apply bg-mahogany-800 text-paper;
+  /* ── Bottom nav safe area ───────────────────────────────────── */
+  .bottom-nav {
+    height: calc(var(--bottom-nav-h) + var(--sab));
+    padding-bottom: var(--sab);
   }
 
-  .nav-item {
-    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-mahogany-600
-           font-sans text-sm font-medium transition-all duration-150
-           hover:bg-mahogany-100 hover:text-mahogany-800;
+  /* ── Sidebar top safe area ──────────────────────────────────── */
+  .sidebar-safe {
+    padding-top: var(--sat);
+  }
+
+  /* ── Main content bottom padding for bottom nav ─────────────── */
+  .content-scroll {
+    padding-bottom: calc(var(--bottom-nav-h) + var(--sab) + 1rem);
+  }
+
+  /* ── Pull-to-refresh visual hint ────────────────────────────── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .ptr-spinner { animation: spin 0.7s linear infinite; }
+
+  /* ── Touch-friendly tap targets (min 44×44) ─────────────────── */
+  .tap-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Install banner ─────────────────────────────────────────── */
+  .install-banner {
+    animation: slideUp 0.3s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
   }
 }
